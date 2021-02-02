@@ -19,13 +19,17 @@ type Page struct {
 	Body  []byte
 }
 
+func makeFileName(name string) (filename string) {
+    return "data/" + name + ".txt"
+}
+
 func (p *Page) save() error {
-	filename := p.Title + ".txt"
+	filename := makeFileName(p.Title)
 	return ioutil.WriteFile(filename, p.Body, 0600)
 }
 
 func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
+	filename := makeFileName(title)
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -65,7 +69,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request, title string) {
     http.Redirect(w, r, "/view/FrontPage", http.StatusFound)
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+var templates = template.Must(template.ParseFiles("tmpl/edit.html", "tmpl/view.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
