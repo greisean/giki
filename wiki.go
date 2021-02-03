@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+    "fmt"
 )
 
 type Page struct {
@@ -61,7 +62,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p := &Page{Title: title, Body: []byte(body)}
 	p.Body = link.ReplaceAllFunc(p.Body, func(b []byte) []byte {
         str := string(b[1:len(b)-1])
-        return []byte(`<a href="/view/` + str + `">` + str + `</a>`)
+        return []byte(fmt.Sprintf("<a href=\"/view/%s\">%s</a>", str, str))
     })
 	err := p.save()
 	if err != nil {
