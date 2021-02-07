@@ -35,7 +35,12 @@ func loadPage(title string) (*Page, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Page{Title: title, Body: body}, nil
+	p := &Page{Title: title, Body: body}
+	p.Body = link.ReplaceAllFunc(p.Body, func(b []byte) []byte {
+        str := string(b[1:len(b)-1])
+        return []byte(fmt.Sprintf("<a href=\"/view/%s\">%s</a>", str, str))
+    })
+	return p, nil
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
@@ -60,10 +65,6 @@ var link = regexp.MustCompile(`\[[a-zA-Z0-9]+\]`)
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
 	p := &Page{Title: title, Body: []byte(body)}
-	p.Body = link.ReplaceAllFunc(p.Body, func(b []byte) []byte {
-        str := string(b[1:len(b)-1])
-        return []byte(fmt.Sprintf("<a href=\"/view/%s\">%s</a>", str, str))
-    })
 	err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
