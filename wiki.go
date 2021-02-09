@@ -44,6 +44,10 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
 	}
+	p.Body = link.ReplaceAllFunc(p.Body, func(b []byte) []byte {
+        str := string(b[1:len(b)-1])
+        return []byte(fmt.Sprintf("<a href=\"/view/%s\">%s</a>", str, str))
+    })
 	renderTemplate(w, "view", p)
 }
 
@@ -60,10 +64,6 @@ var link = regexp.MustCompile(`\[[a-zA-Z0-9]+\]`)
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
 	p := &Page{Title: title, Body: []byte(body)}
-	p.Body = link.ReplaceAllFunc(p.Body, func(b []byte) []byte {
-        str := string(b[1:len(b)-1])
-        return []byte(fmt.Sprintf("<a href=\"/view/%s\">%s</a>", str, str))
-    })
 	err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
