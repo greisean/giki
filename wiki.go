@@ -49,6 +49,10 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
 	}
+	p.Body = link.ReplaceAllFunc(p.Body, func(b []byte) []byte {
+        str := string(b[1:len(b)-1])
+        return []byte(fmt.Sprintf("<a href=\"/view/%s\">%s</a>", str, str))
+    })
 	renderTemplate(w, "view", p)
 }
 

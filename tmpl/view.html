@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link href="post.css" rel="stylesheet">
+<link href="styles.css" rel="stylesheet">
 </head>
 <body>
-<h1>{{.Title}}</h1>
-
+<div class="parent">
+<header>{{.Title}}</header>
+<main>
 <p>[<a href="/edit/{{.Title}}">edit</a>]</p>
 
-<div>{{printf "%s" .Body}}</div>
+<div>{{printf "%s" .Body}}</div></main>
 </body>
 </html>
